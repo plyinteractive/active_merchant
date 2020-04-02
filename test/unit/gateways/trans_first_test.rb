@@ -1,17 +1,16 @@
 require 'test_helper'
 
 class TransFirstTest < Test::Unit::TestCase
-
   def setup
     @gateway = TransFirstGateway.new(
-      :login => 'LOGIN',
-      :password => 'PASSWORD'
+      login: 'LOGIN',
+      password: 'PASSWORD'
     )
 
     @credit_card = credit_card('4242424242424242')
     @check = check
     @options = {
-      :billing_address => address
+      billing_address: address
     }
     @amount = 100
   end
@@ -65,30 +64,30 @@ class TransFirstTest < Test::Unit::TestCase
   def test_successful_refund
     @gateway.stubs(:ssl_post).returns(successful_refund_response)
 
-    response = @gateway.refund(@amount, "TransID")
+    response = @gateway.refund(@amount, 'TransID')
     assert_success response
     assert_equal '207686608|creditcard', response.authorization
-    assert_equal @amount, response.params["amount"].to_i*100
+    assert_equal @amount, response.params['amount'].to_i * 100
   end
 
   def test_failed_refund
     @gateway.stubs(:ssl_post).returns(failed_refund_response)
 
-    response = @gateway.refund(@amount, "TransID")
+    response = @gateway.refund(@amount, 'TransID')
     assert_failure response
   end
 
   def test_successful_void
     @gateway.stubs(:ssl_post).returns(successful_void_response)
 
-    response = @gateway.void("TransID")
+    response = @gateway.void('TransID')
     assert_success response
   end
 
   def test_failed_void
     @gateway.stubs(:ssl_post).returns(failed_void_response)
 
-    response = @gateway.void("TransID")
+    response = @gateway.void('TransID')
     assert_failure response
   end
 
@@ -351,7 +350,7 @@ class TransFirstTest < Test::Unit::TestCase
       <AVSCode>N</AVSCode>
       <CVV2Code />
       </BankCardRefundStatus>
-   XML
+    XML
   end
 
   def failed_void_response

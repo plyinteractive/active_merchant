@@ -36,6 +36,10 @@ axcessms:
 balanced:
   login: 'e1c5ad38d1c711e1b36c026ba7e239a9'
 
+bambora_apac:
+  username: nmi.api
+  password: qwerty123
+
 # Bank Frick doesn't provide public testing data
 bank_frick:
   sender: sender-uuid
@@ -67,6 +71,7 @@ beanstream:
   password: password
   secure_profile_api_key: API Access Passcode
   recurring_api_key: API Access Passcode
+  api_key: API KEY
 
 beanstream_interac:
   login: merchant id
@@ -215,9 +220,17 @@ creditcall:
   terminal_id: '99961426'
   transaction_key: '9drdRU9wJ65SNRw3'
 
+# NOTE: the IP address you run the remote tests from will need to be
+# whitelisted by Credorax; contact support@credorax.com as necessary to request
+# your IP address be added to the whitelist for your test account.
 credorax:
   merchant_id: 'merchant_id'
   cipher_key: 'cipher_key'
+
+ct_payment:
+  api_key: SOMECREDENTIAL
+  company_number: '12345'
+  merchant_number: '12345678'
 
 # Culqi does not provide public testing data
 culqi:
@@ -233,9 +246,23 @@ cyber_source:
   login: X
   password: Y
 
+# Working credentials, no need to replace
+d_local:
+  login: aeaf9bbfa1
+  trans_key: 9de3769b7e
+  secret_key: ae132899f56162a669b38dab5927862f3
+
 data_cash:
   login: X
   password: Y
+
+# Working credentials, no need to replace
+decidir_authorize:
+  api_key: 5a15fbc227224edabdb6f2e8219e8b28
+  preauth_mode: true
+
+decidir_purchase:
+  api_key: 5df6b5764c3f4822aecdc82d56f26b9d
 
 # No working test credentials
 dibs:
@@ -259,10 +286,17 @@ efsnet:
   password: Y
 
 # Provided for url update test
+
 elavon:
-  login: "000127"
-  user: ssltest
-  password: "IERAOBEE5V0D6Q3Q6R51TG89XAIVGEQ3LGLKMKCKCVQBGGGAU7FN627GPA54P5HR"
+  login: "009005"
+  user: "devportal"
+  password: "BDDZY5KOUDCNPV4L3821K7PETO4Z7TPYOJB06TYBI1CW771IDHXBVBP51HZ6ZANJ"
+
+elavon_multi_currency:
+  login: "009006"
+  user: "devportal"
+  password: "XWJS3QTFCH40HW0QGHJKXAYADCTDH0TXXAKXAEZCGCCJ29CFNPCZT4KA9D5KQMDA"
+  multi_currency: true
 
 element:
   account_id: "1013963"
@@ -331,6 +365,12 @@ firstdata_e4:
   login: SD8821-67
   password: T6bxSywbcccbJ19eDXNIGaCDOBg1W7T8
 
+firstdata_e4_v27:
+  login: ALOGIN
+  password: APASSWORD
+  key_id: ANINTEGER
+  hmac_key: AMAGICALKEY
+
 flo2cash:
   username: SOMECREDENTIAL
   password: ANOTHERCREDENTIAL
@@ -371,19 +411,13 @@ hdfc:
 hps:
   secret_api_key: "skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ"
 
+hps_echeck:
+  secret_api_key:
+
 iats_payments:
   agent_code: TEST88
   password: TEST88
   region: na
-
-# login: merchant number
-# password: password for the PEM secret key
-# pem: public certificate and PEM secret key
-ideal_rabobank:
-  login: LOGIN
-  password: PASSWORD
-  pem: |
-    PASTE YOUR PEM FILE HERE
 
 inspire:
   login: demo
@@ -411,6 +445,12 @@ itransact:
 iveri:
   cert_id: CB69E68D-C7E7-46B9-9B7A-025DCABAD6EF
   app_id: d10a603d-4ade-405b-93f1-826dfc0181e8
+
+ixopay:
+  username: USERNAME
+  api_key: API_KEY
+  password: PASSWORD
+  secret: SHARED_SECRET
 
 jetpay:
   login: TESTTERMINAL
@@ -508,9 +548,6 @@ modern_payments:
   login: login
   password: password
 
-mollie_ideal:
-  api_key: 'test_8isBjQoJXJoiXRSzjhwKPO1Bo9AkVA'
-
 # Working credentials, no need to replace
 monei:
   sender_id: 8a829417488d34c401489a5cd1350977
@@ -520,16 +557,18 @@ monei:
 
 # Working credentials, no need to replace
 moneris:
-  login: store1
+  login: store3
   password: yesguy
-
-moneris_us:
-  login: monusqa002
-  password: qatoken
 
 money_movers:
   login: demo
   password: password
+
+mundipagg:
+  api_key: api_key
+  gateway_affiliation_id: gateway_affiliation_id
+  # left for backward-compatibility
+  gateway_id: gateway_id
 
 # Working credentials, no need to replace
 nab_transact:
@@ -594,8 +633,7 @@ openpay:
   merchant_id: 'mzdtln0bmtms6o3kck8f'
 
 opp:
-  user_id: '8a8294174b7ecb28014b9699220015cc'
-  password: 'sy6KJsT8'
+  access_token: 'OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg='
   entity_id: '8a8294174d0a8edd014d242337942575'
 
 optimal_payment:
@@ -841,8 +879,17 @@ quantum:
   password: Y
 
 # You will need to create a developer sandbox at https://developer.intuit.com/ and
-# successfully generate an OAuth 1.0a access token and token secret.
+# successfully generate an OAuth 2.0 access token and refresh_token. Access token
+# expires every 60 minutes
 quickbooks:
+  client_id:
+  client_secret:
+  refresh_token:
+  access_token:
+
+# You will need to create a developer sandbox at https://developer.intuit.com/ and
+# successfully generate an OAuth 1.0a access token and token secret.
+quickbooks_oauth_1:
   consumer_key:
   consumer_secret:
   access_token:
@@ -974,64 +1021,75 @@ realex:
   password: Y
 
 realex_mastercard:
-  number:
+  number: '5425230000004415'
   month: '6'
   year: '2020'
   verification_value: '123'
+  brand: 'master'
 
 realex_mastercard_coms_error:
-  number:
+  number: '5135020000005871'
   month: '6'
   year: '2020'
   verification_value: '123'
+  brand: 'master'
 
 realex_mastercard_declined:
-  number:
+  number: '5114610000004778'
   month: '6'
   year: '2020'
   verification_value: '123'
+  brand: 'master'
 
 realex_mastercard_referral_a:
-  number:
+  number: '5121220000006921'
   month: '6'
   year: '2020'
   verification_value: '123'
+  brand: 'master'
 
 realex_mastercard_referral_b:
-  number:
+  number: '5114630000009791'
   month: '6'
   year: '2020'
   verification_value: '123'
+  brand: 'master'
 
 # Realex doesn't provide public testing data
 # Fill in the card numbers with the Realex test
 # data.
 realex_visa:
-  number:
+  number: '4263970000005262'
   month: '6'
   year: '2020'
   verification_value: '123'
 
+realex_visa_3ds_enrolled:
+  number: '4012001037141112'
+  month: '9'
+  year: '2021'
+  verification_value: '123'
+
 realex_visa_coms_error:
-  number:
+  number: '4009830000001985'
   month: '6'
   year: '2020'
   verification_value: '123'
 
 realex_visa_declined:
-  number:
+  number: '4000120000001154'
   month: '6'
   year: '2020'
   verification_value: '123'
 
 realex_visa_referral_a:
-  number:
+  number: '4000160000004147'
   month: '6'
   year: '2020'
   verification_value: '123'
 
 realex_visa_referral_b:
-  number:
+  number: '4000130000001724'
   month: '6'
   year: '2020'
   verification_value: '123'
@@ -1139,9 +1197,14 @@ tns:
   userid: TESTSPREEDLY01
   password: 3f34fe50334fbe6cbe04c283411a5860
 
+# This account seem to have expired
 tns_ap:
   userid: TESTUNISOLMAA01
   password: b7f8119fda3bd27c17656badb52c95bb
+
+tns_pay_mode:
+  userid: USERID
+  password: password
 
 trans_first:
   login: 45567
@@ -1174,6 +1237,7 @@ trexle:
 trust_commerce:
   login: 'TestMerchant'
   password: 'password'
+  aggregator_id: 'abc123'
 
 # Working credentials, no need to replace
 usa_epay:
@@ -1207,9 +1271,10 @@ viaklix:
 
 # test credentails
 visanet_peru:
-  access_key_id: "AKIAJPOQZ7BAXJZ5K35A"
-  secret_access_key: "Ur+U0pn1bkjRhPGz+G+OLNjqIi7OBlwkZ2eTHySG"
-  merchant_id: "101266802"
+  access_key_id: "AKIAJLJTVQYHO4P76YYA"
+  secret_access_key: "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"
+  merchant_id: "543025501"
+  ruc: '20341198217'
 
 webpay:
   login: "test_secret_eHn4TTgsGguBcW764a2KA8Yd"

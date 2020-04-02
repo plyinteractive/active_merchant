@@ -8,7 +8,7 @@ module ActiveMerchant #:nodoc:
                                      MT HU NL AT PL PT RO SI SK FI SE GB IS LI NO
                                      CH ME MK AL RS TR BA ]
       self.default_currency = 'EUR'
-      self.supported_cardtypes = [:visa, :master, :american_express, :diners_club, :jcb]
+      self.supported_cardtypes = %i[visa master american_express diners_club jcb]
 
       self.homepage_url = 'https://vr-pay-ecommerce.docs.oppwa.com/'
       self.display_name = 'CardProcess VR-Pay'
@@ -99,10 +99,10 @@ module ActiveMerchant #:nodoc:
       end
 
       def scrub(transcript)
-        transcript
-          .gsub(%r{(authentication\.[^=]+=)[^&]+}, '\1[FILTERED]')
-          .gsub(%r{(card\.number=)\d+}, '\1[FILTERED]')
-          .gsub(%r{(cvv=)\d{3,4}}, '\1[FILTERED]\2')
+        transcript.
+          gsub(%r{(authentication\.[^=]+=)[^&]+}, '\1[FILTERED]').
+          gsub(%r{(card\.number=)\d+}, '\1[FILTERED]').
+          gsub(%r{(cvv=)\d{3,4}}, '\1[FILTERED]\2')
       end
 
       private
@@ -123,6 +123,7 @@ module ActiveMerchant #:nodoc:
 
       def add_invoice(post, money, options)
         return if money.nil?
+
         post[:amount] = amount(money)
         post[:currency] = (options[:currency] || currency(money))
         post[:merchantInvoiceId] = options[:merchant_invoice_id] if options[:merchant_invoice_id]
@@ -132,6 +133,7 @@ module ActiveMerchant #:nodoc:
 
       def add_payment(post, payment)
         return if payment.is_a?(String)
+
         post[:paymentBrand] = payment.brand.upcase if payment.brand
         post[:card] ||= {}
         post[:card][:number] = payment.number
@@ -189,7 +191,7 @@ module ActiveMerchant #:nodoc:
         post[:authentication][:password] = @options[:password]
         post[:authentication][:entityId] = @options[:entity_id]
         post[:paymentType] = action
-        dot_flatten_hash(post).map {|key, value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
+        dot_flatten_hash(post).map { |key, value| "#{key}=#{CGI.escape(value.to_s)}" }.join('&')
       end
 
       def error_code_from(response)

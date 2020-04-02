@@ -24,8 +24,8 @@ class RemoteCardConnectTest < Test::Unit::TestCase
   def test_successful_purchase_with_more_options
     options = {
       order_id: '1',
-      ip: "127.0.0.1",
-      email: "joe@example.com",
+      ip: '127.0.0.1',
+      email: 'joe@example.com',
       po_number: '5FSD4',
       tax_amount: '50',
       freight_amount: '29',
@@ -34,29 +34,98 @@ class RemoteCardConnectTest < Test::Unit::TestCase
       ship_from_date: '20877',
       items: [
         {
-          line_no: '1',
+          lineno: '1',
           material: 'MATERIAL-1',
           description: 'DESCRIPTION-1',
           upc: 'UPC-1',
           quantity: '1000',
           uom: 'CS',
-          unit_cost: '900',
-          net_amnt: '150',
-          tax_amnt: '117',
-          disc_amnt: '0'
+          unitcost: '900',
+          netamnt: '150',
+          taxamnt: '117',
+          discamnt: '0'
         },
         {
-          line_no: '2',
+          lineno: '2',
           material: 'MATERIAL-2',
           description: 'DESCRIPTION-2',
           upc: 'UPC-1',
           quantity: '2000',
           uom: 'CS',
-          unit_cost: '450',
-          net_amnt: '300',
-          tax_amnt: '117',
-          disc_amnt: '0'
+          unitcost: '450',
+          netamnt: '300',
+          taxamnt: '117',
+          discamnt: '0'
         }
+      ]
+    }
+
+    response = @gateway.purchase(@amount, @credit_card, options)
+    assert_success response
+    assert_equal 'Approval Queued for Capture', response.message
+  end
+
+  def test_successful_purchase_with_more_options_but_no_PO
+    options = {
+      order_id: '1',
+      ip: '127.0.0.1',
+      email: 'joe@example.com',
+      tax_amount: '50',
+      freight_amount: '29',
+      duty_amount: '67',
+      order_date: '20170507',
+      ship_from_date: '20877',
+      items: [
+        {
+          lineno: '1',
+          material: 'MATERIAL-1',
+          description: 'DESCRIPTION-1',
+          upc: 'UPC-1',
+          quantity: '1000',
+          uom: 'CS',
+          unitcost: '900',
+          netamnt: '150',
+          taxamnt: '117',
+          discamnt: '0'
+        },
+        {
+          lineno: '2',
+          material: 'MATERIAL-2',
+          description: 'DESCRIPTION-2',
+          upc: 'UPC-1',
+          quantity: '2000',
+          uom: 'CS',
+          unitcost: '450',
+          netamnt: '300',
+          taxamnt: '117',
+          discamnt: '0'
+        }
+      ]
+    }
+
+    response = @gateway.purchase(@amount, @credit_card, options)
+    assert_success response
+    assert_equal 'Approval', response.message
+  end
+
+  def test_successful_purchase_with_user_fields
+    # `response` does not contain userfields, but the transaction may be checked after
+    # running the test suite via an authorized call to the inquireByOrderid endpoint:
+    # <site>/cardconnect/rest/inquireByOrderid/<order_id>/<merchant_id>
+    options = {
+      order_id: '138510',
+      ip: '127.0.0.1',
+      email: 'joe@example.com',
+      po_number: '5FSD4',
+      tax_amount: '50',
+      freight_amount: '29',
+      duty_amount: '67',
+      order_date: '20170507',
+      ship_from_date: '20877',
+      user_fields: [
+        {'udf0': 'value0'},
+        {'udf1': 'value1'},
+        {'udf2': 'value2'}
       ]
     }
 
@@ -74,6 +143,13 @@ class RemoteCardConnectTest < Test::Unit::TestCase
     response = @gateway.purchase(@amount, @credit_card, three_ds_options)
     assert_success response
     assert_equal 'Approval', response.message
+  end
+
+  def test_successful_purchase_with_profile
+    store_response = @gateway.store(@credit_card, @options)
+    assert_success store_response
+    purchase_response = @gateway.purchase(@amount, store_response.authorization, @options)
+    assert_success purchase_response
   end
 
   def test_failed_purchase
@@ -172,11 +248,32 @@ class RemoteCardConnectTest < Test::Unit::TestCase
     assert_match %r{Insufficient funds}, response.message
   end
 
+  def test_successful_store
+    response = @gateway.store(@credit_card, @options)
+
+    assert_success response
+    assert_equal 'Profile Saved', response.message
+  end
+
+  def test_successful_unstore
+    store_response = @gateway.store(@credit_card, @options)
+    assert_success store_response
+
+    unstore_response = @gateway.unstore(store_response.authorization, @options)
+    assert_success unstore_response
+  end
+
+  def test_failed_unstore
+    response = @gateway.unstore('0|abcdefghijklmnopq', @options)
+    assert_failure response
+  end
+
   def test_invalid_login
     gateway = CardConnectGateway.new(username: '', password: '', merchant_id: '')
-    assert_raises(ActiveMerchant::ResponseError) do
-      gateway.purchase(@amount, @credit_card, @options)
-    end
+    response = gateway.purchase(@amount, @credit_card, @options)
+
+    assert_failure response
+    assert_match %r{Unable to authenticate.  Please check your credentials.}, response.message
   end
 
   def test_transcript_scrubbing
@@ -184,8 +281,17 @@ class RemoteCardConnectTest < Test::Unit::TestCase
       @gateway.purchase(@amount, @credit_card, @options)
     end
     transcript = @gateway.scrub(transcript)
+
     assert_scrubbed(@credit_card.number, transcript)
     assert_scrubbed(@credit_card.verification_value, transcript)
+    assert_scrubbed(@gateway.options[:password], transcript)
+
+    transcript = capture_transcript(@gateway) do
+      @gateway.purchase(@amount, @check, @options)
+    end
+    transcript = @gateway.scrub(transcript)
+
+    assert_scrubbed(@check.account_number, transcript)
     assert_scrubbed(@gateway.options[:password], transcript)
   end
 end

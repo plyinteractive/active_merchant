@@ -28,7 +28,7 @@ class BorgunTest < Test::Unit::TestCase
     response = @gateway.purchase(@amount, @credit_card, @options)
     assert_success response
 
-    assert_equal "140216103700|11|15|WC0000000001|123456|1|000000012300|978", response.authorization
+    assert_equal '140216103700|11|15|WC0000000001|123456|1|000000012300|978', response.authorization
     assert response.test?
   end
 
@@ -45,7 +45,7 @@ class BorgunTest < Test::Unit::TestCase
     end.respond_with(successful_authorize_response)
 
     assert_success response
-    assert_equal "140601083732|11|18|WC0000000001|123456|5|000000012300|978", response.authorization
+    assert_equal '140601083732|11|18|WC0000000001|123456|5|000000012300|978', response.authorization
 
     capture = stub_comms do
       @gateway.capture(@amount, response.authorization)
@@ -56,13 +56,30 @@ class BorgunTest < Test::Unit::TestCase
     assert_success capture
   end
 
+  def test_authorize_airline_data
+    # itinerary data abbreviated for brevity
+    passenger_itinerary_data = {
+      'MessageNumber' => '1111111',
+      'TrDate' => '20120222',
+      'TrTime' => '151515',
+      'PassengerName' => 'Jane Doe'
+    }
+    response = stub_comms do
+      @gateway.authorize(@amount, @credit_card, {passenger_itinerary_data: passenger_itinerary_data})
+    end.check_request do |endpoint, data, headers|
+      assert_match('PassengerItineraryData', data)
+    end.respond_with(successful_authorize_response)
+
+    assert_success response
+  end
+
   def test_refund
     response = stub_comms do
       @gateway.purchase(@amount, @credit_card)
     end.respond_with(successful_purchase_response)
 
     assert_success response
-    assert_equal "140216103700|11|15|WC0000000001|123456|1|000000012300|978", response.authorization
+    assert_equal '140216103700|11|15|WC0000000001|123456|1|000000012300|978', response.authorization
 
     refund = stub_comms do
       @gateway.refund(@amount, response.authorization)
@@ -79,7 +96,7 @@ class BorgunTest < Test::Unit::TestCase
     end.respond_with(successful_purchase_response)
 
     assert_success response
-    assert_equal "140216103700|11|15|WC0000000001|123456|1|000000012300|978", response.authorization
+    assert_equal '140216103700|11|15|WC0000000001|123456|1|000000012300|978', response.authorization
 
     refund = stub_comms do
       @gateway.void(response.authorization)
